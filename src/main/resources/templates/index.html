@@ -1,42 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>主页</title>
     <style type="text/css">
-        div {
-            margin: 50px auto;
-        }
+
 
         table {
-            width: 200px;
+            margin: 50px auto;
+            border: solid 1px black;
+            width: 800px;
             height: 80px;
+        }
+        td{
+            border: solid 1px black;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+
         }
     </style>
 </head>
-<body>
-<div>
-    <table>
-        <thead>
-        <th>
-        <td>id</td>
-        <td>账号</td>
-        <td>密码</td>
-        <td>邮箱</td>
-        <td>操作</td>
-        </th>
-        </thead>
-        <tbody>
-        <tr>
-            <td>1</td>
-            <td>赵宇</td>
-            <td>123456</td>
-            <td>756834111@qq.com</td>
-            <td><a href="">修改</a><a href="">删除</a></td>
-        </tr>
-        </tbody>
+<script src="/static/jquery-3.3.1.min.js" th:src="@{/jquery-3.3.1.min.js}"></script>
+<script th:inline="javascript">
+    $(function(){
 
-    </table>
-</div>
+        $(".update").click(function () {
+
+
+            $.ajax({
+                url:"/index/"+$(this).attr("userid"),
+                type:"GET",
+                success: function(data){
+                    alert("ajax的UPDATE请求成功!");
+                }
+            })
+        });
+
+
+        $(".delete").click(function () {
+
+
+            $.ajax({
+                url:"/index/"+$(this).attr("userid"),
+                type:"DELETE",
+                success: function(data){
+                    alert("ajax的DELETE请求成功!");
+                }
+            })
+        });
+
+    })
+</script>
+<body>
+    <div>
+        <table>
+            <caption>个人信息表</caption>
+            <thead>
+
+                <td>id</td>
+                <td>账号</td>
+                <td>密码</td>
+                <td>邮箱</td>
+                <td>操作</td>
+
+            </thead>
+            <tbody>
+            <tr th:each="user:${users}" th:object="${user}">
+                <td th:text="*{id}" id="id">1</td>
+                <td th:text="*{name}" id="name">赵宇</td>
+                <td th:text="*{password}" id="password">123456</td>
+                <td th:text="*{email}" id="email">756834111@qq.com</td>
+                <td><a th:attr="userid=*{id}" class="update">修改</a>
+                    |
+                    <a th:attr="userid=*{id}" class="delete">删除</a></td>
+                <!--th:onclick="'javascript:fangfa('+*{id}+',DELETE)'"-->
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
 </body>
 </html>

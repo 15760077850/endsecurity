@@ -27,7 +27,7 @@ public class testMainController {
     public void save() {
         userRepository.save(new User("zhaoyu", "1234", "7568@qq.com"));
         userRepository.save(new User("张欣", "1234", "1234@qq.com"));
-        userRepository.save(new User("张欣", "1234", "3456@qq.com"));
+        userRepository.save(new User("zhangmin", "12234", "3456@qq.com"));
     }
 
     @After

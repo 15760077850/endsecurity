@@ -10,51 +10,52 @@
             margin: 50px auto;
             border: solid 1px black;
             width: 800px;
-            height: 80px;
         }
         td{
             border: solid 1px black;
             height: 20px;
             text-align: center;
             line-height: 20px;
-
+            padding: 0;
         }
     </style>
 </head>
 <script src="/static/jquery-3.3.1.min.js" th:src="@{/jquery-3.3.1.min.js}"></script>
-<script th:inline="javascript">
-    $(function(){
+<!--<script th:inline="javascript">-->
+<!--$(function(){-->
 
-        $(".update").click(function () {
-
-
-            $.ajax({
-                url:"/index/"+$(this).attr("userid"),
-                type:"GET",
-                success: function(data){
-                    alert("ajax的UPDATE请求成功!");
-                }
-            })
-        });
+<!--$(".update").click(function () {-->
 
 
-        $(".delete").click(function () {
+<!--$.ajax({-->
+<!--url:"/index/"+$(this).attr("userid"),-->
+<!--type:"GET",-->
+<!--success: function(data){-->
+<!--alert("ajax的UPDATE请求成功!");-->
+<!--}-->
+<!--})-->
+<!--});-->
 
 
-            $.ajax({
-                url:"/index/"+$(this).attr("userid"),
-                type:"DELETE",
-                success: function(data){
-                    alert("ajax的DELETE请求成功!");
-                }
-            })
-        });
+<!--$(".delete").click(function () {-->
 
-    })
-</script>
+
+<!--$.ajax({-->
+<!--url:"/index/"+$(this).attr("userid"),-->
+<!--type:"DELETE",-->
+<!--success: function(data){-->
+<!--alert("ajax的DELETE请求成功!");-->
+<!--}-->
+<!--})-->
+<!--});-->
+
+<!--})-->
+<!--</script>-->
 <body>
+<h3><a th:href="@{/index/touserForm}">添加</a></h3>
+<span th:text="${loginUser}"></span>
     <div>
-        <table>
+        <table cellpadding="0" cellspacing="0">
             <caption>个人信息表</caption>
             <thead>
 
@@ -66,15 +67,17 @@
 
             </thead>
             <tbody>
+            <tr th:if="${users.size()} eq 0">
+                <td th:colspan="5">暂时没有用户信息</td>
+            </tr>
             <tr th:each="user:${users}" th:object="${user}">
                 <td th:text="*{id}" id="id">1</td>
                 <td th:text="*{name}" id="name">赵宇</td>
                 <td th:text="*{password}" id="password">123456</td>
                 <td th:text="*{email}" id="email">756834111@qq.com</td>
-                <td><a th:attr="userid=*{id}" class="update">修改</a>
+                <td><a th:href="'/index/'+*{id}">修改</a>
                     |
-                    <a th:attr="userid=*{id}" class="delete">删除</a></td>
-                <!--th:onclick="'javascript:fangfa('+*{id}+',DELETE)'"-->
+                    <a th:href="'/index/delete/'+*{id}">删除</a></td>
             </tr>
             </tbody>
 

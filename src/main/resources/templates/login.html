@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<form action="/index" th:action="@{/index}" method="post">
+<form th:action="@{/index/toindex}" method="post">
     账号:
     <input type="text" name="name"><br>
     密码:
@@ -14,5 +14,6 @@
     <input type="submit" value="提交"><br>
 
 </form>
+<h1 th:text="${loginFail}"></h1>
 </body>
 </html>

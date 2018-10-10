@@ -3,6 +3,7 @@ package com.zhaoyu.spingbootsecurity.practice1.controller;
 
 import com.zhaoyu.spingbootsecurity.practice1.domain.User;
 import com.zhaoyu.spingbootsecurity.practice1.repository.UserRepository;
+import com.zhaoyu.spingbootsecurity.practice1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping
     public String toIndex(Model model) {
         List<User> users = userRepository.findAll();
@@ -31,7 +35,7 @@ public class UserController {
     @PostMapping("/toindex")
     public ModelAndView loginEnd(User user) {
 
-        User user2 = userRepository.findByNameAndPassword(user.getName(), user.getPassword());
+        User user2 = userService.login(user);
         if (user2 != null) {
             return new ModelAndView("redirect:/index", "loginUser", user2);
         }

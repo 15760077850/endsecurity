@@ -4,13 +4,10 @@ import com.zhaoyu.spingbootsecurity.practice1.domain.User;
 import com.zhaoyu.spingbootsecurity.practice1.repository.UserRepository;
 import com.zhaoyu.spingbootsecurity.practice1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserServiceImpl implements UserService,UserDetailsService{
+public class UserServiceImpl implements UserService{
     @Autowired
     private UserRepository userRepository;
     @Override
@@ -24,14 +21,4 @@ public class UserServiceImpl implements UserService,UserDetailsService{
         return userRepository.findByUsername(name);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(s);
-        System.out.println("1");
-        System.out.println("2");
-        System.out.println("3");
-        System.out.println("4");
-        if (user == null) throw new UsernameNotFoundException("Username " + s + " not found");
-        return user;
-    }
 }

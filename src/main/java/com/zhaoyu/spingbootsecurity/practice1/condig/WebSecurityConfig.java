@@ -1,77 +1,112 @@
 package com.zhaoyu.spingbootsecurity.practice1.condig;
 
 import com.zhaoyu.spingbootsecurity.practice1.domain.User;
+import com.zhaoyu.spingbootsecurity.practice1.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Configuration
-@EnableWebMvcSecurity
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)//开启security注解
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception { //配置策略
+        http.csrf().disable();
+        http.authorizeRequests().
+                antMatchers("/static/**").permitAll().anyRequest().authenticated().
+                and().formLogin().loginPage("/tologin").loginProcessingUrl("/login").defaultSuccessUrl("/index").permitAll().successHandler(loginSuccessHandler()).
+                and().logout().permitAll().invalidateHttpSession(true).
+                deleteCookies("JSESSIONID").logoutSuccessHandler(logoutSuccessHandler()).
+                and().sessionManagement().maximumSessions(10).expiredUrl("/tologin");
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
+        auth.eraseCredentials(false);
+
+       //auth.inMemoryAuthentication().withUser("123").password(new BCryptPasswordEncoder(4).encode("123")).roles("user");
+       // auth.inMemoryAuthentication().withUser("111").password(new BCryptPasswordEncoder(4).encode("111")).roles("admin");
+    }
+
+
     @Bean
-    @Override
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
+    public BCryptPasswordEncoder passwordEncoder() { //密码加密
+        return new BCryptPasswordEncoder(4);
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        //允许所有用户访问"/"和"/home"
-        http.authorizeRequests()
-                .antMatchers("/tologin","/h2/**").permitAll()
-                //其他地址的访问均需验证权限
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                //指定登录页是"/login"
-                .loginPage("/login").failureUrl("/tologin")
-                .defaultSuccessUrl("/Test")//登录成功后默认跳转到"/hello"
-                .permitAll()
-                .and()
-                .logout()
-                .logoutSuccessUrl("/tologin")//退出登录后的默认url是"/index"
-                .permitAll();
-
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() { //登出处理
+        return new LogoutSuccessHandler() {
+            @Override
+            public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
+                try {
+                    User user = (User) authentication.getPrincipal();
+                    logger.info("USER : " + user.getUsername()+ " LOGOUT SUCCESS !  ");
+                } catch (Exception e) {
+                    logger.info("LOGOUT EXCEPTION , e : " + e.getMessage());
+                }
+                httpServletResponse.sendRedirect("/tologin");
+            }
+        };
     }
-//    @Bean
-//    public BCryptPasswordEncoder passwordEncoder() { //密码加密
-//        return new BCryptPasswordEncoder(4);
-//    }
 
     @Bean
     public SavedRequestAwareAuthenticationSuccessHandler loginSuccessHandler() { //登入处理
         return new SavedRequestAwareAuthenticationSuccessHandler() {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                User userDetails = (User) authentication.getPrincipal();
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                 logger.info("USER : " + userDetails.getUsername() + " LOGIN SUCCESS !  ");
+                response.sendRedirect("/index");
                 super.onAuthenticationSuccess(request, response, authentication);
             }
         };
     }
+    @Bean
+    public UserDetailsService userDetailsService() {    //用户登录实现
+        return new UserDetailsService() {
+            @Autowired
+            private UserRepository userRepository;
+
+            @Override
+            public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+                User user = userRepository.findByUsername(s);
+                if (user == null){
+                    throw new UsernameNotFoundException("Username " + s + " not found");
+                }
+
+                Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+                authorities.add(new SimpleGrantedAuthority("user"));
+                return user;
+            }
+        };
 
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .inMemoryAuthentication()
-                .withUser("123").password("123").roles("USER");
-        //在内存中创建了一个用户，该用户的名称为user，密码为password，用户角色为USER
     }
-
-
 }

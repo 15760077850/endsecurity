@@ -3,6 +3,7 @@ package com.zhaoyu.spingbootsecurity.practice1.domain;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +17,7 @@ public class User implements Serializable,UserDetails {
     private Long id;
     @Column(length = 20)
     private String username;
-    @Column(length = 20)
+    @Column(length = 200)
     private String password;
     @Column(length = 40)
     private String email;
@@ -45,12 +46,12 @@ public class User implements Serializable,UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return username;
     }
 
     public void setUsername(String username) {
@@ -82,9 +83,12 @@ public class User implements Serializable,UserDetails {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password =password;
     }
 
+    public void setBCryptPassword(String password) {
+        this.password =new BCryptPasswordEncoder(4).encode(password);
+    }
     public String getEmail() {
         return email;
     }

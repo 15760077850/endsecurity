@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -32,16 +31,16 @@ public class UserController {
         return "/index";
     }
 
-    @PostMapping("/toindex")
-    public ModelAndView loginEnd(User user) {
-
-        User user2 = userService.login(user);
-        if (user2 != null) {
-            return new ModelAndView("redirect:/index", "loginUser", user2);
-        }
-
-        return new ModelAndView("login", "loginFail", "登录失败");
-    }
+//    @PostMapping("/toindex")
+//    public ModelAndView loginEnd(User user) {
+//
+//        User user2 = userService.login(user);
+//        if (user2 != null) {
+//            return new ModelAndView("redirect:/index", "loginUser", user2);
+//        }
+//
+//        return new ModelAndView("login", "loginFail", "登录失败");
+//    }
 
     @GetMapping("delete/{id}")
     public String deleteUser(@PathVariable Long id){

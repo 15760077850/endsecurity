@@ -1,10 +1,12 @@
 package com.zhaoyu.spingbootsecurity.practice1.domain;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -13,69 +15,70 @@ public class User implements Serializable,UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 20)
-    private String name;
+    private String username;
     @Column(length = 20)
     private String password;
     @Column(length = 40)
     private String email;
 
-    public User(String name, String password, String email) {
-        this.name = name;
-        this.password = password;
-        this.email = email;
-    }
 
     protected User() {
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        String username = this.getUsername();
+        if (username != null) {
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(username);
+            authorities.add(authority);
+        }
+        return authorities;
     }
 
+    @Override
     public String getPassword() {
-        return password;
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return this.name;
+        return null;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setPassword(String password) {
@@ -88,5 +91,9 @@ public class User implements Serializable,UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

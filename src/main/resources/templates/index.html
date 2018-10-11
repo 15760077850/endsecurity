@@ -44,7 +44,7 @@
             </tr>
             <tr th:each="user:${users}" th:object="${user}">
                 <td th:text="*{id}" id="id">1</td>
-                <td th:text="*{name}" id="name">赵宇</td>
+                <td th:text="*{username}" id="username">赵宇</td>
                 <td th:text="*{password}" id="password">123456</td>
                 <td th:text="*{email}" id="email">756834111@qq.com</td>
                 <td><a th:href="'/index/'+*{id}">修改</a>

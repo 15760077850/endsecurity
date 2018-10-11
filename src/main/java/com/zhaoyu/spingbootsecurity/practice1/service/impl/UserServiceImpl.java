@@ -15,17 +15,23 @@ public class UserServiceImpl implements UserService,UserDetailsService{
     private UserRepository userRepository;
     @Override
     public User login(User user) {
-        User user2 = userRepository.findByNameAndPassword(user.getName(), user.getPassword());
+        User user2 = userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
         return user2;
     }
 
     @Override
     public User findUserByName(String name) {
-        return userRepository.findByName(name);
+        return userRepository.findByUsername(name);
     }
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return userRepository.findByName(s);
+        User user = userRepository.findByUsername(s);
+        System.out.println("1");
+        System.out.println("2");
+        System.out.println("3");
+        System.out.println("4");
+        if (user == null) throw new UsernameNotFoundException("Username " + s + " not found");
+        return user;
     }
 }

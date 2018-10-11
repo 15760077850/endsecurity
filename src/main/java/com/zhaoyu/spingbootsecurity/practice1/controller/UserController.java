@@ -31,6 +31,13 @@ public class UserController {
         return "/index";
     }
 
+    @GetMapping("/test")
+    public String toTest(Model model) {
+        List<User> users = userRepository.findAll();
+        model.addAttribute("users", users);
+        return "/Test";
+    }
+
 //    @PostMapping("/toindex")
 //    public ModelAndView loginEnd(User user) {
 //

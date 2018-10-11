@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 //指定登录页是"/login"
                 .loginPage("/login").failureUrl("/tologin")
-                .defaultSuccessUrl("/index")//登录成功后默认跳转到"/hello"
+                .defaultSuccessUrl("/Test")//登录成功后默认跳转到"/hello"
                 .permitAll()
                 .and()
                 .logout()
